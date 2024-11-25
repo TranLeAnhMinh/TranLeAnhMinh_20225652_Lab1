@@ -1,3 +1,5 @@
+Việc sử dụng varargs mang lại sự linh hoạt hơn bởi nó cho phép thêm bất kỳ số lượng đĩa DVD nào mà không cần phải khai báo một mảng cụ thể. Điều này giúp mã nguồn trở nên gọn gàng và dễ đọc hơn, đồng thời cũng thuận tiện hơn khi gọi phương thức. Vì vậy, em thấy phương thức sử dụng varargs rất hữu ích và phù hợp.
+
 1. Java là ngôn ngữ lập trình "Pass by Value" hay "Pass by Reference"?
 Java là một ngôn ngữ lập trình sử dụng cơ chế "Pass by Value". Khi truyền tham số vào phương thức, Java sẽ sao chép giá trị của tham số và sử dụng bản sao đó trong phương thức. Do đó, mọi thay đổi trên tham số bên trong phương thức sẽ không ảnh hưởng đến giá trị của biến gốc mà bạn truyền vào.
 
