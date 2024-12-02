@@ -1,45 +1,60 @@
- Thay vì sử dụng Comparator để so sánh các mục trong 
-giỏ hàng, chúng ta có thể sử dụng giao diện Comparable và ghi đè phương thức 
-compareTo(). Giả sử chúng ta đang áp dụng Comparable interface approach. 
- Lớp nào nên triển khai giao diện Comparable? 
- Lớp nên triển khai giao diện Comparable là lớp chứa đối tượng mà bạn 
-muốn so sánh, trong trường hợp này, là abstract class “Media”. 
- Trong các lớp đó, phải triển khai phương thức compareTo() như thế nào để 
-phản ánh đúng thứ tự mà chúng ta muốn? 
- Để triển khai phương thức compareTo() thì cần so sánh các thuộc tính của 
-đối tượng. Đối với yêu cầu sắp xếp theo title sau đó là cost, có thể triển khai 
-như sau:  
-@Override 
-public int compareTo(Media other) { 
-if (!this.getTitle().equals(other.getTitle())) { 
-return this.getTitle().compareTo(other.getTitle()); 
-} else { 
-return Double.compare(this.getCost(), other.getCost()); 
-} 
-} 
- Liệu có thể có hai quy tắc sắp xếp (theo title sau đó là cost và theo cost sau 
-đó là title) nếu sử dụng cách tiếp cận này với giao diện Comparable? 
- Không, với giao diện Comparable, bạn chỉ có thể có một quy tắc sắp xếp cho 
-mỗi lớp. Điều này là do phương thức compareTo() chỉ trả về một giá trị int. 
- Giả sử các đĩa DVD có một quy tắc sắp xếp khác biệt so với các loại phương 
-tiện khác, tức là theo tiêu đề, sau đó là độ dài giảm dần, sau đó là giá. Bạn sẽ 
-làm thế nào để điều chỉnh mã của mình để cho phép điều này? 
- Có thể tạo một lớp riêng cho DVD và triển khai phương thức compareTo(): 
-public class DVD extends Media implements Comparable<DVD> { 
+1. Lớp nào nên triển khai interface Comparable?
+Lớp cần triển khai interface Comparable là những lớp mà bạn muốn sắp xếp các đối tượng của chúng dựa trên các thuộc tính của lớp đó. Ví dụ, nếu bạn có một lớp tên là Item đại diện cho các sản phẩm trong giỏ hàng, lớp này sẽ triển khai Comparable<Item> để có thể so sánh và sắp xếp các đối tượng Item.
 
-@Override 
+public class Item implements Comparable<Item> {
+    private String title;
+    private double cost;
 
- 
+    // Constructor, getters và setters được bỏ qua để tiết kiệm không gian
 
- 
-    public int compareTo(DVD other) { 
-        if (!this.getTitle().equals(other.getTitle())) { 
-            return this.getTitle().compareTo(other.getTitle()); 
-        } else if (this instanceof DVD && other instanceof DVD) { 
-            return Integer.compare(((DVD) other).getLength(), ((DVD) 
-this).getLength()); 
-        } else { 
-            return Double.compare(this.getCost(), other.getCost()); 
-        } 
-    } 
-} 
+    @Override
+    public int compareTo(Item other) {
+        // Logic so sánh sẽ được thực hiện ở đây
+    }
+}
+Phương thức compareTo() phải trả về một số nguyên để chỉ rõ thứ tự của đối tượng hiện tại so với đối tượng khác
+2. Trong những lớp đó, bạn nên triển khai phương thức compareTo() như thế nào để phản ánh thứ tự mà chúng ta muốn?
+Một số nguyên âm nếu đối tượng này nhỏ hơn đối tượng đã chỉ định.
+Zero nếu hai đối tượng bằng nhau.
+Một số nguyên dương nếu đối tượng này lớn hơn đối tượng đã chỉ định.
+Ví dụ, nếu bạn muốn sắp xếp các mục trước tiên theo tiêu đề và sau đó theo chi phí, cách triển khai có thể như sau:
+
+@Override
+public int compareTo(Item other) {
+    int titleComparison = this.title.compareTo(other.title);
+    if (titleComparison != 0) {
+        return titleComparison; // Sắp xếp theo tiêu đề
+    }
+    return Double.compare(this.cost, other.cost); // Sắp xếp theo chi phí
+}
+3. Chúng ta có thể có hai quy tắc sắp xếp của mục (theo tiêu đề rồi đến chi phí và theo chi phí rồi đến tiêu đề) nếu chúng ta sử dụng cách tiếp cận interface Comparable không?
+Không, chúng ta không thể có hai quy tắc sắp xếp khác nhau trong một lớp khi chỉ sử dụng interface Comparable. Lý do là phương thức compareTo() chỉ có thể chứa một quy tắc sắp xếp duy nhất, tức là bạn chỉ có thể so sánh các đối tượng dựa trên một tiêu chí (hoặc theo tiêu đề rồi đến chi phí, hoặc theo chi phí rồi đến tiêu đề) trong mỗi lần triển khai.
+4. Giả sử các DVD có quy tắc sắp xếp khác với các loại phương tiện khác, đó là theo tiêu đề, sau đó là độ dài giảm dần, rồi đến chi phí. Bạn sẽ sửa đổi mã của mình như thế nào để cho phép điều này?
+Nếu các DVD có quy tắc sắp xếp riêng biệt (theo tiêu đề, sau đó là độ dài giảm dần và cuối cùng là chi phí), bạn có thể thực hiện điều này bằng cách tạo một lớp riêng cho DVD và triển khai interface Comparable. Dưới đây là cách thực hiện:
+
+public class DVD implements Comparable<DVD> {
+    private String title;
+    private double length; // Giả sử độ dài tính bằng phút
+    private double cost;
+
+    @Override
+    public int compareTo(DVD other) {
+        // So sánh theo tiêu đề
+        int titleComparison = this.title.compareTo(other.title);
+        if (titleComparison != 0) {
+            return titleComparison; // Trả về kết quả so sánh tiêu đề nếu không bằng nhau
+        }
+        
+        // So sánh theo độ dài (giảm dần)
+        int lengthComparison = Double.compare(other.length, this.length); // Đảo ngược so với bình thường
+        if (lengthComparison != 0) {
+            return lengthComparison; // Trả về kết quả so sánh độ dài nếu không bằng nhau
+        }
+
+        // So sánh theo chi phí
+        return Double.compare(this.cost, other.cost); // Trả về kết quả so sánh chi phí
+    }
+}
+Giải thích: So sánh theo tiêu đề: Dùng phương thức compareTo() của lớp String để sắp xếp theo thứ tự alphabet.
+            So sánh theo độ dài: Để đảm bảo độ dài được sắp xếp giảm dần, ta đảo ngược so sánh giữa this.length và other.length bằng cách gọi                    Double.compare(other.length, this.length).
+            So sánh theo chi phí: Cuối cùng, dùng Double.compare() để sắp xếp các DVD theo chi phí theo thứ tự tăng dần.
